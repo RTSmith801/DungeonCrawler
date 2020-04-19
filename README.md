@@ -1,2 +1,2 @@
 # DungeonCrawler
-Sampling a dungeon crawler
+Creating a dungeon crawler
