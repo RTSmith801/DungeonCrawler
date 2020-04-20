@@ -27,21 +27,15 @@ public class PlayerMovement : MonoBehaviour
         {
             lookDirection.Set(movement.x, movement.y);
             lookDirection.Normalize();
-        }
-
-        if(Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0)
-        {
-            animator.SetFloat("lastMoveX", Input.GetAxisRaw("Horizontal"));
-            animator.SetFloat("lastMoveY", Input.GetAxisRaw("Vertical"));
-        }
+        }        
 
         animator.SetFloat("Horizontal", lookDirection.x);
         animator.SetFloat("Vertical", lookDirection.y);
-        animator.SetFloat("Speed", movement.sqrMagnitude);       
+        animator.SetFloat("Speed", movement.magnitude);       
     }
 
     private void FixedUpdate()
     {
-        rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
+        rb.MovePosition(rb.position + movement.normalized * moveSpeed * Time.fixedDeltaTime);
     }
 }
