@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -9,12 +7,13 @@ public class PlayerMovement : MonoBehaviour
 
     public float moveSpeed = 5f;
     Vector2 movement;
+    Vector2 lookDirection = new Vector2(0, -1);
 
 
     private void Start()
     {
-        rb = transform.gameObject.GetComponent<Rigidbody2D>();
-        animator = transform.gameObject.GetComponent<Animator>();
+        rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -23,13 +22,26 @@ public class PlayerMovement : MonoBehaviour
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");
 
-        animator.SetFloat("Horizontal", movement.x);
-        animator.SetFloat("Vertical", movement.y);
-        animator.SetFloat("Speed", movement.sqrMagnitude);
+        // Attempting to store the last direction moved so the character will keep facing said direction when idle.
+        if (!Mathf.Approximately(movement.x, 0.0f) || !Mathf.Approximately(movement.y, 0.0f))
+        {
+            lookDirection.Set(movement.x, movement.y);
+            lookDirection.Normalize();
+        }
+
+        if(Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0)
+        {
+            animator.SetFloat("lastMoveX", Input.GetAxisRaw("Horizontal"));
+            animator.SetFloat("lastMoveY", Input.GetAxisRaw("Vertical"));
+        }
+
+        animator.SetFloat("Horizontal", lookDirection.x);
+        animator.SetFloat("Vertical", lookDirection.y);
+        animator.SetFloat("Speed", movement.sqrMagnitude);       
     }
 
     private void FixedUpdate()
     {
-        rb.MovePosition(rb.position + movement.normalized * moveSpeed * Time.fixedDeltaTime);
+        rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
     }
 }
